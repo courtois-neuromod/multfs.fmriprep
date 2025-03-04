@@ -32,8 +32,9 @@ if [ -d sourcedata/freesurfer ] ; then
   git -C sourcedata/freesurfer checkout -b $SLURM_JOB_NAME
 fi
 
-git submodule foreach  --recursive bash -c "git-annex enableremote ria-beluga-storage | true"
-git submodule foreach  --recursive bash -c "git-annex enableremote ria-beluga-storage-local | true"
+git submodule foreach  --recursive bash -c "git-annex enableremote ria-beluga-storage || true"
+git submodule foreach  --recursive bash -c "git-annex enableremote ria-beluga-storage-local || true"
+
 
 datalad containers-run -m 'fMRIPrep_sub-05/ses-006' -n bids-fmriprep --input sourcedata/templateflow/tpl-MNI152NLin2009cAsym/ --input sourcedata/templateflow/tpl-OASIS30ANTs/ --input sourcedata/templateflow/tpl-fsLR/ --input sourcedata/templateflow/tpl-fsaverage/ --input sourcedata/templateflow/tpl-MNI152NLin6Asym/ --output . --input 'sourcedata/cneuromod.multfs.raw/sub-05/ses-006/fmap/' --input 'sourcedata/cneuromod.multfs.raw/sub-05/ses-006/func/'  --input 'sourcedata/smriprep/sub-05/anat/' --input sourcedata/smriprep/sourcedata/freesurfer/fsaverage/ --input sourcedata/smriprep/sourcedata/freesurfer/sub-05/ -- -w ./workdir --participant-label 05 --anat-derivatives sourcedata/smriprep --fs-subjects-dir sourcedata/smriprep/sourcedata/freesurfer --bids-filter-file code/fmriprep_study-cneuromod.multfs.raw_sub-05_ses-006_bids_filters.json --output-layout bids --ignore slicetiming --use-syn-sdc --output-spaces MNI152NLin2009cAsym T1w:res-iso2mm --cifti-output 91k --notrack --write-graph --skip_bids_validation --omp-nthreads 8 --nprocs 12 --mem_mb 45056 --fs-license-file code/freesurfer.license  sourcedata/cneuromod.multfs.raw ./ participant 
 fmriprep_exitcode=$?
